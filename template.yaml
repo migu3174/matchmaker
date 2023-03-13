@@ -15,12 +15,12 @@ Globals:
 
 Resources:
   CreateDevelopersPairFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Handler: create-developers-pair.lambdaHandler
       Runtime: nodejs18.x
       Architectures:
-        - x86_64
+        - arm64
       # Events:
       #   HelloWorld:
       #     Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -44,10 +44,7 @@ Resources:
       State: "ENABLED"
       Targets: 
         - 
-          Arn: 
-            Fn::GetAtt: 
-              - "CreateDevelopersPairFunction"
-              - "Arn"
+          Arn: !GetAtt "CreateDevelopersPairFunction.Arn"
           Id: "CreateDevelopersPairFunction"
   
   PermissionForEventsToInvokeLambda: 
@@ -56,10 +53,7 @@ Resources:
       FunctionName: !Ref "NewAppClientsNotifierFunction"
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
-      SourceArn: 
-        Fn::GetAtt: 
-          - "ScheduledRule"
-          - "Arn"
+      SourceArn: !GetAtt "ScheduledRule.Arn"
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
