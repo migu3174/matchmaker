@@ -5,13 +5,18 @@ Description: >
 
   Sample SAM Template for matchmaker
   
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  Env:
+    Default: dev
+    Type: String
+
 Globals:
   Function:
-    Timeout: 3
-    Enviroment:
+    Timeout: 30
+    Runtime: nodejs18.x
+    Environment:
       Variables:
-
+        ENVIRONMENT: !Ref Env
 
 Resources:
   CreateDevelopersPairFunction:
@@ -19,14 +24,11 @@ Resources:
     Properties:
       Handler: create-developers-pair.lambdaHandler
       Runtime: nodejs18.x
+      Policies:
+        - AWSLambdaDynamoDBExecutionRole
+        - AmazonDynamoDBFullAccess
       Architectures:
-        - arm64
-      # Events:
-      #   HelloWorld:
-      #     Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-      #     Properties:
-      #       Path: /hello
-      #       Method: get
+        - x86_64
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -40,7 +42,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties: 
       Description: "ScheduledRule"
-      ScheduleExpression: "cron(30 9 * * 1)"
+      ScheduleExpression: "rate(365 days)" # "cron(30 9 * * 1)"
       State: "ENABLED"
       Targets: 
         - 
@@ -50,21 +52,41 @@ Resources:
   PermissionForEventsToInvokeLambda: 
     Type: AWS::Lambda::Permission
     Properties: 
-      FunctionName: !Ref "NewAppClientsNotifierFunction"
+      FunctionName: !Ref "CreateDevelopersPairFunction"
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt "ScheduledRule.Arn"
 
+  DevelopersDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub developers-${Env}
+      BillingMode: "PAY_PER_REQUEST"
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: N
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: createdAt
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  LambdaDynamoDbWriteConnector:
+    Type: AWS::Serverless::Connector
+    Properties:
+      Source:
+        Id: CreateDevelopersPairFunction
+      Destination:
+        Id: DevelopersDynamoDBTable
+      Permissions:
+        - Write
+        - Read
+
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  Databse:
+    Description: "databse"
+    Value: !GetAtt DevelopersDynamoDBTable.Arn

@@ -1,0 +1,14 @@
+version = 0.1
+[dev]
+[dev.deploy]
+[dev.deploy.parameters]
+stack_name = "matchmaker-dev"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-7lxc08636iud"
+s3_prefix = "matchmaker-dev"
+region = "us-east-1"
+profile = "tinkin-dev"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+parameter_overrides = "Env=\"dev\""
+image_repositories = []

@@ -1,5 +1,9 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { BatchGetCommandOutput, DynamoDBDocumentClient, ScanCommand, PutCommandOutput } from '@aws-sdk/lib-dynamodb';
 
+const dynamoClient = new DynamoDBClient({ region: 'us-east-1' });
+const ddbDocClient = DynamoDBDocumentClient.from(dynamoClient);
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -10,21 +14,43 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
  *
  */
 
-export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<BatchGetCommandOutput | PutCommandOutput> => {
+    console.log('Env :', process.env.ENVIRONMENT);
+    // const params = {
+    //     RequestItems: {
+    //         [`developers-${process.env.ENVIRONMENT}`]: {
+    //             Keys: [
+    //                 {
+    //                     id: { S: '1' },
+    //                 },
+    //                 // {
+    //                 //     createdAt: { N: 2222222 },
+    //                 // },
+    //             ],
+    //         },
+    //     },
+    // };
+
+    const params = {
+        TableName: `developers-${process.env.ENVIRONMENT}`,
+    };
+
+    // const params = {
+    //     Item: {
+    //         id: '1',
+    //         createdAt: Date.now(),
+    //     },
+    //     TableName: `developers-${process.env.ENVIRONMENT}`,
+    // };
+
     try {
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                message: 'hello world',
-            }),
-        };
+        // const data = await ddbDocClient.send(new PutCommand(params));
+        const data = await ddbDocClient.send(new ScanCommand(params));
+        console.log('Success :', data);
+        // console.log("Success :", data.Item);
+        return data;
     } catch (err) {
-        console.log(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: 'some error happened',
-            }),
-        };
+        console.error('Error', err);
+        return {} as BatchGetCommandOutput;
     }
 };
