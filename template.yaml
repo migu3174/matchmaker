@@ -86,7 +86,18 @@ Resources:
         - Write
         - Read
 
+  SQSQueueNotifier:
+    Type: AWS::SQS::Queue
+    Properties: 
+      QueueName: !Sub SQSQueuePairsNotifier-${Env}
+
 Outputs:
   Databse:
     Description: "databse"
     Value: !GetAtt DevelopersDynamoDBTable.Arn
+  QueueARN:
+    Description: "SQS pairs queue notifier Arn"
+    Value: !GetAtt SQSQueueNotifier.Arn
+  QueueURL:
+    Description: "SQS pairs queue notifier URL"
+    Value: !GetAtt SQSQueueNotifier.QueueUrl
