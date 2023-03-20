@@ -1,0 +1,5 @@
+START RequestId: 437a6738-de8f-448b-b032-24edc15a914b Version: $LATEST
+2023-03-20T02:49:38.267Z	437a6738-de8f-448b-b032-24edc15a914b	INFO	Success : {  "$metadata": {    "httpStatusCode": 200,    "requestId": "GLB2RRN08M9CN5D860OG21SOI7VV4KQNSO5AEMVJF66Q9ASUAAJG",    "attempts": 1,    "totalRetryDelay": 0  },  "UnprocessedItems": {}}
+END RequestId: 437a6738-de8f-448b-b032-24edc15a914b
+REPORT RequestId: 437a6738-de8f-448b-b032-24edc15a914b	Init Duration: 0.12 ms	Duration: 1432.46 ms	Billed Duration: 1433 ms	Memory Size: 128 MB	Max Memory Used: 128 MB	
+{}

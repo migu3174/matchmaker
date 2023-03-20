@@ -38,6 +38,25 @@ Resources:
         EntryPoints: 
         -  src/handlers/create-developers-pair.ts
 
+  ManageMatchmakerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: manage-matchmaker.lambdaHandler
+      Runtime: nodejs18.x
+      Policies:
+        - AWSLambdaDynamoDBExecutionRole
+        - AmazonDynamoDBFullAccess
+      Architectures:
+        - x86_64
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        -  src/handlers/manage-matchmaker.ts
+
   ScheduledRule: 
     Type: AWS::Events::Rule
     Properties: 
@@ -61,21 +80,20 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Sub developers-${Env}
-      BillingMode: "PAY_PER_REQUEST"
+      # BillingMode: "PAY_PER_REQUEST"
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
-        - AttributeName: createdAt
-          AttributeType: N
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-        - AttributeName: createdAt
-          KeyType: RANGE
       StreamSpecification:
         StreamViewType: NEW_IMAGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
 
-  LambdaDynamoDbWriteConnector:
+  LambdaDynamoDbConnector:
     Type: AWS::Serverless::Connector
     Properties:
       Source:
@@ -94,7 +112,7 @@ Resources:
 Outputs:
   Databse:
     Description: "databse"
-    Value: !GetAtt DevelopersDynamoDBTable.Arn
+    Value: !Ref DevelopersDynamoDBTable
   QueueARN:
     Description: "SQS pairs queue notifier Arn"
     Value: !GetAtt SQSQueueNotifier.Arn
