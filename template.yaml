@@ -75,8 +75,8 @@ Resources:
             BatchSize: 1
       Environment:
         Variables:
-          DISCORD_WEBHOOK_ID: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/webhook_id}}"
-          DISCORD_WEBHOOK_TOKEN: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/webhook_token}}"
+          DISCORD_WEBHOOK_ID: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/id}}"
+          DISCORD_WEBHOOK_TOKEN: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/token}}"
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
