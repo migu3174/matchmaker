@@ -22,6 +22,7 @@ Resources:
   CreateDevelopersPairFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub create-developers-pair-${Env}
       Handler: create-developers-pair.lambdaHandler
       Runtime: nodejs18.x
       Policies:
@@ -41,6 +42,7 @@ Resources:
   ManageMatchmakerFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub manage-matchmaker-${Env}
       Handler: manage-matchmaker.lambdaHandler
       Runtime: nodejs18.x
       Policies:
@@ -60,6 +62,7 @@ Resources:
   SendPairNotificationFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub send-pair-notifier-${Env}
       Handler: send-pair-notifier.lambdaHandler
       Runtime: nodejs18.x
       Architectures:
@@ -70,6 +73,10 @@ Resources:
           Properties:
             Queue: !GetAtt SQSQueueNotifier.Arn
             BatchSize: 1
+      Environment:
+        Variables:
+          DISCORD_WEBHOOK_ID: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/webhook_id}}"
+          DISCORD_WEBHOOK_TOKEN: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/webhook_token}}"
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -132,9 +139,9 @@ Resources:
       QueueName: !Sub SQSQueuePairsNotifier-${Env}
 
 Outputs:
-  Databse:
+  DatabaseName:
     Description: "databse"
-    Value: !Ref DevelopersDynamoDBTable
+    Value: !Ref DevelopersDynamoDBTable 
   QueueARN:
     Description: "SQS pairs queue notifier Arn"
     Value: !GetAtt SQSQueueNotifier.Arn
