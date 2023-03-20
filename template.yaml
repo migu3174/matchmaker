@@ -29,7 +29,7 @@ Resources:
         - AmazonDynamoDBFullAccess
       Architectures:
         - x86_64
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Minify: true
@@ -56,6 +56,28 @@ Resources:
         Sourcemap: true
         EntryPoints: 
         -  src/handlers/manage-matchmaker.ts
+  
+  SendPairNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: send-pair-notifier.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SQSQueueNotifier.Arn
+            BatchSize: 1
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        -  src/handlers/send-pair-notifier.ts
 
   ScheduledRule: 
     Type: AWS::Events::Rule
