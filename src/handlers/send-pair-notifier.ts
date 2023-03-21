@@ -15,15 +15,13 @@ const lambdaHandler = async (event: SQSEvent): Promise<void> => {
         details: { event },
     });
     const { Records } = event;
-    const pairs = Records[0].body as unknown as any[];
+    const pairs = Records[0].body as unknown as string[];
 
     const params: ExecuteWebhookParams = {
         embeds: [
             {
                 title: TITLE,
-                description: pairs.reduce((acc, pair) => {
-                    return `${acc} - ${pair}\n`;
-                }, ''),
+                description: pairs.reduce((acc, pair) => `${acc}\n${pair}`),
                 color: GREEN_COLOR,
             },
         ],
