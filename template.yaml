@@ -22,6 +22,7 @@ Resources:
   CreateDevelopersPairFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub create-developers-pair-${Env}
       Handler: create-developers-pair.lambdaHandler
       Runtime: nodejs18.x
       Policies:
@@ -29,7 +30,7 @@ Resources:
         - AmazonDynamoDBFullAccess
       Architectures:
         - x86_64
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Minify: true
@@ -41,6 +42,7 @@ Resources:
   ManageMatchmakerFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub manage-matchmaker-${Env}
       Handler: manage-matchmaker.lambdaHandler
       Runtime: nodejs18.x
       Policies:
@@ -56,6 +58,33 @@ Resources:
         Sourcemap: true
         EntryPoints: 
         -  src/handlers/manage-matchmaker.ts
+  
+  SendPairNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub send-pair-notifier-${Env}
+      Handler: send-pair-notifier.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SQSQueueNotifier.Arn
+            BatchSize: 1
+      Environment:
+        Variables:
+          DISCORD_WEBHOOK_ID: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/id}}"
+          DISCORD_WEBHOOK_TOKEN: !Sub "{{resolve:ssm:/${Env}/discord/webhooks/token}}"
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        -  src/handlers/send-pair-notifier.ts
 
   ScheduledRule: 
     Type: AWS::Events::Rule
@@ -104,7 +133,18 @@ Resources:
         - Write
         - Read
 
+  SQSQueueNotifier:
+    Type: AWS::SQS::Queue
+    Properties: 
+      QueueName: !Sub SQSQueuePairsNotifier-${Env}
+
 Outputs:
-  Databse:
+  DatabaseName:
     Description: "databse"
-    Value: !Ref DevelopersDynamoDBTable
+    Value: !Ref DevelopersDynamoDBTable 
+  QueueARN:
+    Description: "SQS pairs queue notifier Arn"
+    Value: !GetAtt SQSQueueNotifier.Arn
+  QueueURL:
+    Description: "SQS pairs queue notifier URL"
+    Value: !GetAtt SQSQueueNotifier.QueueUrl
