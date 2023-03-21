@@ -32,6 +32,7 @@
   "dependencies": {
     "@aws-lambda-powertools/logger": "^1.6.0",
     "@aws-sdk/client-dynamodb": "^3.293.0",
+    "@aws-sdk/client-sqs": "^3.295.0",
     "@aws-sdk/lib-dynamodb": "^3.293.0",
     "@middy/core": "^4.2.7",
     "@middy/sqs-json-body-parser": "^2.5.7",
