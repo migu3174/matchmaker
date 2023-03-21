@@ -29,7 +29,6 @@ const lambdaHandler = async (event: SQSEvent): Promise<void> => {
         ],
     };
     const { id, token } = Config.getDiscordWebhookCredentials();
-
     const webhook = new DiscordClient({ id, token });
 
     try {
