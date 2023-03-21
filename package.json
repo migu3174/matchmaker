@@ -14,7 +14,7 @@
     "build": "sam build"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.92",
+    "@types/aws-lambda": "^8.10.114",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.11.4",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
@@ -33,6 +33,8 @@
     "@aws-lambda-powertools/logger": "^1.6.0",
     "@aws-sdk/client-dynamodb": "^3.293.0",
     "@aws-sdk/lib-dynamodb": "^3.293.0",
+    "@middy/core": "^4.2.7",
+    "@middy/sqs-json-body-parser": "^2.5.7",
     "axios": "1.3.4"
   }
 }

@@ -63,7 +63,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub send-pair-notifier-${Env}
-      Handler: send-pair-notifier.lambdaHandler
+      Handler: send-pair-notifier.handler
       Runtime: nodejs18.x
       Architectures:
         - x86_64
