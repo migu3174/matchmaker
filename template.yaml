@@ -17,6 +17,7 @@ Globals:
     Environment:
       Variables:
         ENVIRONMENT: !Ref Env
+        SQS_QUEUE_URL: !GetAtt SQSQueueNotifier.QueueUrl
 
 Resources:
   CreateDevelopersPairFunction:
