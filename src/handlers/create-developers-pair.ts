@@ -1,28 +1,14 @@
 import { BatchWriteItemCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { BatchGetCommandOutput, DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { logger } from '../common';
+import { Developer } from './interfaces';
 
 const dynamoClient = new DynamoDBClient({ region: 'us-east-1' });
 const ddbDocClient = DynamoDBDocumentClient.from(dynamoClient);
 const client = new SQSClient({});
 
-interface PairHistory {
-    pair: string;
-    date: number;
-    partner: string;
-}
-
-interface Developer {
-    id: string;
-    name: string;
-    fullName: string;
-    email: string;
-    createdAt: number;
-    pairHistory: PairHistory[];
-}
-
-export const lambdaHandler = async (event: any, context: any): Promise<BatchGetCommandOutput | void> => {
+export const lambdaHandler = async (): Promise<void> => {
     const params = {
         TableName: `developers-${process.env.ENVIRONMENT}`,
     };
@@ -54,8 +40,7 @@ export const lambdaHandler = async (event: any, context: any): Promise<BatchGetC
             },
         };
 
-        const data2 = await ddbDocClient.send(new BatchWriteItemCommand(params2));
-        console.log('\nSuccess :', JSON.stringify(data2, null, 2));
+        await ddbDocClient.send(new BatchWriteItemCommand(params2));
 
         await client
             .send(
@@ -65,15 +50,15 @@ export const lambdaHandler = async (event: any, context: any): Promise<BatchGetC
                 }),
             )
             .catch((err) => {
-                logger.info('[SQS received] Error sending message to discord', {
+                logger.error('[Lambda invoked] Error sending message to discord', {
                     details: { err },
                 });
             });
     } catch (err) {
-        console.error('Error', err);
-        return {} as BatchGetCommandOutput;
+        logger.error('[Lambda invoked] Error creating devs pair', {
+            details: { err },
+        });
     }
-    return context.logStreamName;
 };
 
 const generatePairs = (devs: Developer[]): { devs: Developer[]; devsPair: string[] } => {
