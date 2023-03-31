@@ -1,0 +1,5 @@
+START RequestId: c210da45-cf29-44c5-877a-34a85f9fbb25 Version: $LATEST
+2023-03-23T15:43:53.938Z	c210da45-cf29-44c5-877a-34a85f9fbb25	INFO	sqs queue url https://sqs.us-east-1.amazonaws.com/973030543589/SQSQueuePairsNotifier-dev dev
+2023-03-23T15:43:54.671Z	c210da45-cf29-44c5-877a-34a85f9fbb25	INFO	devsPair [  "Pedro - Abdías",  "Andrea - Lucila",  "Ian - Washo",  "Juanfra - Andrés V",  "Dany_Orellana - Xavi",  "Alex C - Mabe",  "Alex - Gastón",  "Tella - Paul",  "Ari - Exe",  "Walter - Migue",  "Chan - Dennis",  "Nico - Lenin"]
+nullEND RequestId: c210da45-cf29-44c5-877a-34a85f9fbb25
+REPORT RequestId: c210da45-cf29-44c5-877a-34a85f9fbb25	Init Duration: 0.11 ms	Duration: 1611.20 ms	Billed Duration: 1612 ms	Memory Size: 128 MB	Max Memory Used: 128 MB	

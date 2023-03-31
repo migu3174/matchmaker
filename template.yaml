@@ -10,15 +10,6 @@ Parameters:
     Default: dev
     Type: String
 
-Globals:
-  Function:
-    Timeout: 30
-    Runtime: nodejs18.x
-    Environment:
-      Variables:
-        ENVIRONMENT: !Ref Env
-        SQS_QUEUE_URL: !GetAtt SQSQueueNotifier.QueueUrl
-
 Resources:
   CreateDevelopersPairFunction:
     Type: AWS::Serverless::Function
@@ -29,6 +20,7 @@ Resources:
       Policies:
         - AWSLambdaDynamoDBExecutionRole
         - AmazonDynamoDBFullAccess
+        - AmazonSQSFullAccess
       Architectures:
         - x86_64
     Metadata:
@@ -66,6 +58,8 @@ Resources:
       FunctionName: !Sub send-pair-notifier-${Env}
       Handler: send-pair-notifier.handler
       Runtime: nodejs18.x
+      Policies:
+        - AmazonSQSFullAccess
       Architectures:
         - x86_64
       Events:
@@ -138,6 +132,15 @@ Resources:
     Type: AWS::SQS::Queue
     Properties: 
       QueueName: !Sub SQSQueuePairsNotifier-${Env}
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs18.x
+    Environment:
+      Variables:
+        ENVIRONMENT: !Ref Env
+        SQS_QUEUE_URL: !Sub "https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/SQSQueuePairsNotifier-${Env}"
 
 Outputs:
   DatabaseName:

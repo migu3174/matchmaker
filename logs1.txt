@@ -1,0 +1,4 @@
+START RequestId: b2b0b151-c79c-4fcf-8b46-1b7ad52864b2 Version: $LATEST
+{"level":"INFO","message":"[Lambda invoked] Creating devs","service":"service_undefined","timestamp":"2023-03-23T14:29:23.252Z","environment":"dev","logger":{"name":"@aws-lambda-powertools/logger","version":"1.5.1"},"details":{"$metadata":{"httpStatusCode":200,"requestId":"395T2RCF2ID7FP1UHS5D20PM3FVV4KQNSO5AEMVJF66Q9ASUAAJG","attempts":1,"totalRetryDelay":0},"UnprocessedItems":{}}}
+nullEND RequestId: b2b0b151-c79c-4fcf-8b46-1b7ad52864b2
+REPORT RequestId: b2b0b151-c79c-4fcf-8b46-1b7ad52864b2	Init Duration: 0.10 ms	Duration: 927.46 ms	Billed Duration: 928 ms	Memory Size: 128 MB	Max Memory Used: 128 MB	

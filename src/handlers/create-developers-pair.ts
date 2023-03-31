@@ -13,6 +13,8 @@ export const lambdaHandler = async (): Promise<void> => {
         TableName: `developers-${process.env.ENVIRONMENT}`,
     };
 
+    console.log('sqs queue url', process.env.SQS_QUEUE_URL, process.env.ENVIRONMENT);
+
     try {
         const data = await ddbDocClient.send(new ScanCommand(params));
         const { devs, devsPair } = generatePairs(data.Items as Developer[]);
@@ -41,6 +43,8 @@ export const lambdaHandler = async (): Promise<void> => {
         };
 
         await ddbDocClient.send(new BatchWriteItemCommand(params2));
+
+        console.log('devsPair', JSON.stringify(devsPair, null, 2));
 
         await client
             .send(
